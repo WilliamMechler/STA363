@@ -1,0 +1,157 @@
+---
+title: "Class 02: Assignment"
+author: "William Mechler"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# ICEBREAKER 
+
+## Group Members Names
+
+**Will Mechler, Alex Cermak, Victoria castel, Natella Parsadan, Sara Grimes, Michael**
+
+## Your Group's Story
+
+
+After a long morning of Pilates, I was late for my class’s Zoom session. Upon logging in, I found something unsettling….
+
+Instead of all the students and the professor, all of the screens were photos of aliens!
+
+They had giant green heads and threatened to take over earth, demanding we find the universe's best cup of black coffee. They stated "you have five earth minutes"
+
+What we didn’t know  that five earth minutes was an hour on their planet and the request was very unreasonable considering the lines for any coffee shop in the morning were at least ten minutes long.
+
+We sent out the most caffeine addicted student to get a cup of pure black coffee at the coffee shop because who knows caffeine better than the most caffeine addicted student?
+
+They were able to cut to the front of the line because of the alien invasion emergency. The barista started making the strongest cup of coffee they knew how and gave it to the student for the aliens.
+
+When I gave the Aliens the cup of coffee they we trilled. Who would have that a cup of coffee from Starbucks would save our world.
+
+**Enter your group's story here**
+
+----
+
+Now you get the opportunity to perform a similar analysis as the example we covered in class today. Below is out an outline of your expectations. The primary task for today is to take the supplied code in the example and modify it for the specific problems we outline below. Some code is provided and space is included for all the *code chunks* needed to do the assignment.
+
+## Load the packages and input data
+
+First we load the necessary packages and then provide code to properly input the data and modify any variables so they are processed correctly (i.e., numeric to factor):
+
+```{r, message=FALSE}
+library(tidyverse)
+library(knitr)
+
+evals <- read.csv("http://users.miamioh.edu/hughesmr/sta363/teachingEvals.csv")
+
+evals <- evals %>%
+  mutate(Term = as.factor(Term),
+         Instructor=as.factor(Instructor),
+         Course=factor(Course, 1:4, labels=c("FSB Core", "MKT Core", "MKT Elective", "MKT Capstone")))
+```
+
+
+## Part 1
+
+We will eventually perform a two-sample $t$-test to compare the Welcoming of Students' Questions (`iWelcQues`) rating for Instructors coded 6291 and 6090. In the next chunk author some code to filter down to the relevant and necessary data.
+
+```{r, warning=FALSE}
+evalswelcome <- evals %>%
+  filter(Instructor %in% c("6291", "6090")) %>%
+select(Instructor,iWelcQues)
+          
+```
+
+
+## Part 2
+
+Compute the mean, standard deviation and 5-number summary for the Welcoming of Students' Questions rating for the two instructors under study.
+
+```{r, message=FALSE}
+evalswelcome %>%
+  group_by(Instructor) %>%
+  summarize(Mean=mean(iWelcQues),
+            SD=sd(iWelcQues),
+            Min=min(iWelcQues),
+            Q1 = quantile(iWelcQues, prob=0.25),
+            Median=median(iWelcQues),
+            Q3 = quantile(iWelcQues, prob=0.75),
+            Max=max(iWelcQues)) %>%
+  kable()
+```
+
+
+## Part 3
+
+In the next code chunk construct a graphic to compare the teaching evaluations for Instructors 6291 and 6090 based on the Welcoming of Students' Questions metric.
+
+```{r, message=FALSE}
+ggplot(evalswelcome, aes(x=Instructor, y=iWelcQues)) + 
+  geom_boxplot() + 
+  stat_summary(fun=mean, geom="point", shape=23, size=3, fill="gray60") + 
+  theme_minimal()
+```
+
+What are your findings based on the graphic from Part 3 and the numeric summary in Part 2?
+
+**That the Instructor 6291 has a more consistent rating where 6090 has a larger range.**
+
+
+## Part 4
+
+Perform the appropriate $t$-test (equal or unequal variance assumption) comparing the teaching evaluations for the two instructors.
+
+
+```{r, message=FALSE}
+t.test(iWelcQues ~ Instructor, data=evalswelcome, var.equal=FALSE)
+```
+
+Did you choose an equal variance or unequal variance test? Why?
+
+**I choose an unequal variance test has the data shows to data sets with different variances. And we are trying to see how different these two Instructor's sorced.**
+
+What are the findings from this test?
+
+**That 6090 has a larger variance then 6291.**
+
+
+## Part 5
+
+Assess the normality assumption for the performed $t$-test in the below code chunk.
+
+```{r, message=FALSE}
+ggplot(evalswelcome) + 
+  geom_qq(aes(sample=iWelcQues) ) + 
+  geom_qq_line(aes(sample=iWelcQues)) + 
+  facet_wrap(~Instructor)
+```
+
+Do you have any concerns about the Normality assumption? What does this imply about the test if anything.
+
+**I have conerns about the Normality assumption as for the most part the data points fall on or near where they should. However many data point fall off of the line which can be seen**
+
+
+## Part 6
+
+**NOTE: This part is arguably the hardest part of this assignment and will require you to do a little bit of problem solving.**
+
+Write code using a combination of `group_by()` and `summarize()` statements to determine the four instructors who, on average, have the lowest teaching evaluation for effectively challenging students to think and learn (`iChallenged`). **Feel free to Google for help.**
+
+```{r, message=FALSE}
+evalschall <- evals %>%
+  select(Instructor,iChallenged)
+
+evalschall %>%
+  group_by(Instructor) %>%
+  summarize(Mean=mean(iChallenged)) %>%
+  slice_min(order_by = Mean, n = 4) %>%
+  kable()
+              
+```
+
+Which 4 instructors have the lowest `iChallenged` ratings?
+
+**The 4 instructors with the lowest iChallenged ratings are 7523, 5564, 6831, 6963**
