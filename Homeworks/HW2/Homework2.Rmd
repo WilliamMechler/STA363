@@ -38,7 +38,8 @@ J.R. Stroop (1935). "Studies of Interference in Serial Verbal Reactions", Journa
 #### Problem 1 Part 2
 **Build an appropriate plot for the design of data. Comment on what you see, including comments on the average and variation in the response. Make sure your plot is properly labeled and would be understandable to an outside viewer (that is, the labels and titles explain the context).**
 ```{r}
-
+color <- read.csv("color_interference.csv")
+glimpse(color)
 ```
 
 #### Problem 1 Part 3
@@ -78,7 +79,8 @@ An experiment was conduct to compare whether two compound X and compound Y were 
 #### Problem 2 Part 2
 **Create a factor version of the variable that requires it.**
 ```{r}
-
+P2 <- read.csv("infarct.csv")
+glimpse(P2)
 ```
 
 #### Problem 2 Part 3
