@@ -1,0 +1,106 @@
+---
+title: 'Homework #2'
+author: "William Mechler"
+date: "2/5/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Homework 2
+
+*** 
+
+#### Loading packages needed for the problems
+```{r, loadPackages, message=FALSE}
+library(tidyverse)
+library(knitr)
+library(ggfortify)
+library(emmeans)
+```
+
+## Problem 1
+An experiment was conducted to determine the time taken for individuals to read a list of words. Specifically, individuals were tasked with reading a list of color names in two settings: subjects would read a list of colors written in a different color (e.g., blue written in red and red in purple) and then subjects would read the list written in black (e.g., blue, red, purple). Each individual was randomly assigned the order in which to read the two list. The experimenters are interested in determine if the font color/writing style influences reading time. Specifically they wish to determine if the different writing styles result in a mean difference in time to read the list.
+
+### Data Source for Problem 1
+J.R. Stroop (1935). "Studies of Interference in Serial Verbal Reactions", Journal of Experimental Psychology, Vol 18, pp643-662
+
+*** 
+
+#### Problem 1 Part 1
+**Comment on the design of the experiment. Specifically state all the design elements in the context of the problem: the experimental units, the response variable(s), the factor, factor levels, the treatments, and the steps the experimenter took in an attempt to control for nuisance variation or confounding variables.**
+```{r}
+
+```
+
+#### Problem 1 Part 2
+**Build an appropriate plot for the design of data. Comment on what you see, including comments on the average and variation in the response. Make sure your plot is properly labeled and would be understandable to an outside viewer (that is, the labels and titles explain the context).**
+```{r}
+
+```
+
+#### Problem 1 Part 3
+**Perform the appropriate statistical analysis for this design.**
+```{r}
+
+```
+
+#### Problem 1 Part 4
+**Perform a residual analysis for the statistical method chosen in part 3.**
+```{r}
+
+```
+
+#### Problem 1 Part 5
+**State the conclusion of the experiment, in context.**
+```{r}
+
+```
+
+***
+
+## Problem 2
+An experiment was conduct to compare whether two compound X and compound Y were protective in a mouse model of middle cerebral artery occlusion (MCAO).The end point of the study was infarct volume measured from serial brain sections and staining with hematoxylin–eosin. Mice were randomly assigned to three groups, vehicle treatment(control), compound X and compound Y. In the data set, the three groups are coded as: 1 = vehicle, 2 = compound X and 3 = compound Y.  read the list.
+
+### Data Source for Problem 2
+ P. Schlattman and U. Dirnagl (2010). "Statistics in Experimental Cerebrovascular Research: Comparison of More then Two Groups with a Continuous Outcome Variable," Journal of Cerebral Blood Flow & Metabolism, Vol. 30, pp. 1558-1563
+
+***
+
+#### Problem 2 Part 1
+**Comment on the design of the experiment. Specifically state all the design elements in the context of the problem: the experimental units, the response variable(s), the factor, factor levels, the treatments, and the steps the experimenter took in an attempt to control for nuisance variation or confounding variables.**
+```{r}
+
+```
+
+#### Problem 2 Part 2
+**Create a factor version of the variable that requires it.**
+```{r}
+
+```
+
+#### Problem 2 Part 3
+**Perform a meaning/helping EDA for this data. Comment on what you see, including comment on average and variation in foam index.**
+```{r}
+
+```
+
+#### Problem 2 Part 4
+**Perform the appropriate statistical analysis for this design. Cite the statistics value, degrees of freedom, p-value, and the conclusion in problem context.**
+```{r}
+
+```
+
+#### Problem 2 Part 5
+**Perform a residual analysis for the statistical method chosen in part 4 to check the model assumptions.**
+```{r}
+
+```
+
+#### Problem 2 Part 6
+**Perform appropriate multiple comparisons if necessary and report the results in context.  You must provide a defense of your choice to use Tukey or Dunnett.**
+```{r}
+
+```
