@@ -44,10 +44,20 @@ color <- read.csv("color_interference.csv")
 
 glimpse(color)
 
-ggplot(color, aes(y=DiffCol)) + 
-  geom_boxplot( col="gray40") +
+color.data <- color %>%
+  pivot_longer(c(DiffCol, Black), names_to="EvalType", values_to="Mean") %>%
+  mutate(EvalType=factor(EvalType, levels=c("DiffCol","Black")))
 
-  theme_bw()
+# Make profile plot with mean overlays
+ggplot(color.data, aes(x = EvalType, y = Mean)) + 
+  geom_boxplot() +
+  geom_point(aes(group = Subj, color = Subj), alpha = 0.4) +
+  geom_line(aes(group = Subj, color = Subj), alpha = 0.4) + 
+  stat_summary(fun = "mean", size = 3, geom = "point", color="red") +
+  stat_summary(fun = "mean", size = 1, geom = "line", color="red", aes(group = 1)) +
+  theme(legend.position = "none") +
+  ylab("Time to complete test") +
+  xlab("Test type") 
 
 ```
 
