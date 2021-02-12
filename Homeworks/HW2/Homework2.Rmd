@@ -105,6 +105,9 @@ ggplot(mice_data, aes(x=Treatment, y=Volume)) +
   labs(x="Treatments", y="Infarct Volume Measured") + 
   theme_bw()
 ```
+<br/>
+**From the above plot we can see that when we compare both Compound X and Y to Vehicle we see that Compound Y looks to have a lower average volume when compared to Compound X and Vehicle. As well it appears to have a smaller variation as well.**
+<br/>
 
 #### Problem 2 Part 4
 **Perform the appropriate statistical analysis for this design. Cite the statistics value, degrees of freedom, p-value, and the conclusion in problem context.**
