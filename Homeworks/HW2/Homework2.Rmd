@@ -30,16 +30,25 @@ J.R. Stroop (1935). "Studies of Interference in Serial Verbal Reactions", Journa
 *** 
 
 #### Problem 1 Part 1
-**Comment on the design of the experiment. Specifically state all the design elements in the context of the problem: the experimental units, the response variable(s), the factor, factor levels, the treatments, and the steps the experimenter took in an attempt to control for nuisance variation or confounding variables.**
-```{r}
+**Comment on the design of the experiment. Specifically state all the design elements in the context of the problem: the experimental units, the response variable(s), the factor, factor levels, the treatments, and the steps the experimenter took in an attempt to control for nuisance variation or confounding variables.** 
+<br/>
+The experimental units would be the individuals taking part in the experiment. The response variable would be their time taken to complete each reading. The factor would be the color of the reading list which as two factor levels being, written all in black or colors written in a different color. Then the treatments would just be the order in which they took the tests. Finally the steps taken to control nuisance variation are they randomly assigned each subject the order in which they took the tests.
 
-```
+<br/>
 
 #### Problem 1 Part 2
 **Build an appropriate plot for the design of data. Comment on what you see, including comments on the average and variation in the response. Make sure your plot is properly labeled and would be understandable to an outside viewer (that is, the labels and titles explain the context).**
 ```{r}
 color <- read.csv("color_interference.csv")
+
+
 glimpse(color)
+
+ggplot(color, aes(y=DiffCol)) + 
+  geom_boxplot( col="gray40") +
+
+  theme_bw()
+
 ```
 
 #### Problem 1 Part 3
@@ -72,37 +81,48 @@ An experiment was conduct to compare whether two compound X and compound Y were 
 
 #### Problem 2 Part 1
 **Comment on the design of the experiment. Specifically state all the design elements in the context of the problem: the experimental units, the response variable(s), the factor, factor levels, the treatments, and the steps the experimenter took in an attempt to control for nuisance variation or confounding variables.**
-```{r}
+<br/>
 
-```
+The experimental units were the mice assigned to each factor. Those factors being compound X, compound Y and vehicle. Each factor only has one factor level so the treatments are compound X, compound Y and vehicle. In a special note vehicle is being considered as the control. The response variable is the infarct volume measured after each test.
+
 
 #### Problem 2 Part 2
 **Create a factor version of the variable that requires it.**
 ```{r}
-P2 <- read.csv("infarct.csv")
-glimpse(P2)
+mice_data <- read.csv("infarct.csv") %>%
+    mutate(Treatment=factor(Treatment, 1:3, labels=c("vehicle",
+                                                     "compound X",
+                                                     "compound Y")))
+glimpse(mice_data)
 ```
 
 #### Problem 2 Part 3
 **Perform a meaning/helping EDA for this data. Comment on what you see, including comment on average and variation in foam index.**
 ```{r}
-
+ggplot(mice_data, aes(x=Treatment, y=Volume)) + 
+  geom_boxplot( col="gray40") +
+  stat_summary(fun=mean, geom="point", shape=21, stroke=2, fill="white", color="blue")+
+  labs(x="Treatments", y="Infarct Volume Measured") + 
+  theme_bw()
 ```
 
 #### Problem 2 Part 4
 **Perform the appropriate statistical analysis for this design. Cite the statistics value, degrees of freedom, p-value, and the conclusion in problem context.**
 ```{r}
+mice_aov <- aov(Volume ~ Treatment, data=mice_data)
 
+summary(mice_aov)
 ```
 
 #### Problem 2 Part 5
 **Perform a residual analysis for the statistical method chosen in part 4 to check the model assumptions.**
 ```{r}
-
+autoplot(mice_aov)
 ```
 
 #### Problem 2 Part 6
 **Perform appropriate multiple comparisons if necessary and report the results in context.  You must provide a defense of your choice to use Tukey or Dunnett.**
 ```{r}
-
+mice.treatment <- emmeans(mice_aov, "Treatment")
+contrast(mice.treatment, "trt.vs.ctrl", ref=1)
 ```
