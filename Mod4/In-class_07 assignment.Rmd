@@ -1,6 +1,6 @@
 ---
 title: "Class 07: Assignment"
-author: "YOUR NAME HERE"
+author: "William Mechler"
 output: html_document
 ---
 
@@ -46,7 +46,11 @@ head(alcohol %>%
 **ACTIVITY: Save the dichotomized Age variable.**
 
 ```{r}
+alcohol <- alcohol %>% 
+       mutate(Age = case_when(Age < 31 ~ "20s",
+                              Age %in% 31:40 ~ "30s"))
 
+head(alcohol)
 ```
 
 So the `Age` variable has now been categorized. Now, we need to convert the data from *wide* to *long* format. We do this with the `pivot_longer()` function included in `tidyverse`. 
@@ -54,6 +58,8 @@ So the `Age` variable has now been categorized. Now, we need to convert the data
 **ACTIVITY: Convert the data from wide-to-tall format.**
 
 ```{r}
+alcohol.long<- alcohol %>%
+  pivot_longer(c(T0,T1,T2,T3,T4,T5,T6), names_to="TimeFrame", values_to="ReactionTime")
 
 ```
 
@@ -66,6 +72,7 @@ So the `Age` variable has now been categorized. Now, we need to convert the data
 ```{r}
 # peek at the pivoted data structure
 # head(alcohol.long, n=12)
+head(alcohol.long, n=12)
 ```
 
 You will now note the data is now in a **long** format, which is how we need it expressed for the analysis.
@@ -75,7 +82,13 @@ Lastly, so that R doesn't try and treat it as a number, we tell it that the `Sub
 **ACTIVITY: Correct the factor variables.** In the code chunk below, edit the `alcohol.long` dataset so that the `Subject` variable is treated as a factor, and so that the factor levels in the `Alcohol` varaible are in an logical order (Control, Moderate, High).
 
 ```{r}
+alcohol.long <- alcohol.long %>%
+  mutate(Subject=factor(Subject),
+         Alcohol=factor(Alcohol, labels=c("Control",
+                                          "Moderate",
+                                          "High")))
 
+head(alcohol.long)
 ```
 
 ### Exploratory Data Analysis
@@ -87,7 +100,8 @@ First we consider a plot of the Reaction times in Time based on Alcohol treatmen
 **ACTIVITY: Make a profile plot of all subjects.**
 
 ```{r}
-
+ggplot(alcohol.long) +
+    geom_line(aes(x=TimeFrame, y=ReactionTime, color=Alcohol, linetype=Age, group=Subject)) 
 ```
 
 With multiple colors and line types, as well as grouping by subject, this plot is crowded with lines. Not only is this plot cluttered, it is hard to determine anything informative.  
@@ -95,19 +109,30 @@ With multiple colors and line types, as well as grouping by subject, this plot i
 **ACTIVITY: Facet the plot.**  In the code chunk below, edit the plot I made above, but instead facet the plot by `Age`. You should also get rid of the `linetype=` argument. Is the resulting plot improved?  Does it still have shortcomings?
 
 ```{r}
-
+ggplot(alcohol.long) +
+    geom_line(aes(x=TimeFrame, y=ReactionTime, color=Alcohol, group=Subject)) +
+   facet_wrap(~Age)
 ```
 
 **ACTIVITY: Plot the means.**  To improve the ability to see the factor effects, we can make a plot of the means rather than the raw data, grouping by the `Alcohol` groups while still faceting by `Age`.  Write code below to do make such a plot, and comment on what you observe in the resulting plot.  We suggest you look back at knitted Markdown from Class 06 for some guidance with code.
 
 ```{r}
-
+alcohol.summary <- alcohol.long %>%
+  group_by(Alcohol, TimeFrame) %>%
+  summarise(Mean = mean(ReactionTime),
+            SE = sd(ReactionTime)/sqrt(length(ReactionTime)))
 ```
 
 **ACTIVITY: Plot the means without faceting.**
 
 ```{r}
-
+ggplot(alcohol.summary, aes(x=TimeFrame, y=Mean, colour=Alcohol)) + 
+  geom_errorbar(aes(ymin=Mean-SE, ymax=Mean+SE), width=.1, position=position_dodge(0.3)) +
+  geom_line(aes(group=Alcohol), position=position_dodge(0.3)) +
+  geom_point(position=position_dodge(0.3)) +
+  xlab("Time Frame") +
+  ylab("Reaction Time") +
+  ggtitle("Mean Reaction Time (with Standard Error bars)")
 ```
 
 **ACTIVITY: Comment on the information provided in any/all the plots provided.**
