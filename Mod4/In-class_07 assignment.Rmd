@@ -1,0 +1,151 @@
+---
+title: "Class 07: Assignment"
+author: "YOUR NAME HERE"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(knitr)
+library(emmeans)
+options(dplyr.summarise.inform=FALSE)
+```
+
+## Study
+
+A study was conducted to determine the effects of alcohol on human reaction times. Fifty-seven individuals were recruited for this study and were randomly allocated into one of three alcohol treatment groups -- a **control** where the subjects remain sober during the entire study, a **moderate** group were the subject is supplied alcohol but is limited in such a way that their blood alcohol content remains under the legal limit to drive (BAC of 0.08) and a group that received a **high** amount of alcohol to which their BAC may exceed the legal limit for driving. Each subject was trained on a video game system and their reaction time (in milliseconds) to a visual stimulus was recorded at 7 time points 30 minutes apart (labeled T0=0, T1=30, T2=60 and so on). At time point T0, all subjects were sober and those in one of the alcohol consumption groups began drinking after the first measured reaction time (controlled within the specifications outlined). It is also of interest to the researcher if a subjects age influences reaction time (namely, is reaction time different for those in the 20s versus 30s).
+
+The task for today is to do a complete analysis for this study and dig into the effects that alcohol, age and time have on mean reaction times.
+
+----------------
+
+### Data input and wrangling
+
+First read in the data and peek at the first 6 rows:
+
+```{r}
+alcohol <- read.csv("alcoholReaction.csv")
+head(alcohol)
+```
+
+Note the following:
+
+* The `Age` variable is recorded as an actual numeric age in years, not as categories of 20s or 30s like we want.  So, we will need to dichotomize this variable. 
+* Also note the data is in *wide* format -- the reaction times (the response variables) are spread over multiple time-sepcific columns. We need a way to *pivot* these columns into a single column. 
+
+So, we need to do some data processing.  First, consider the below code:
+```{r}
+head(alcohol %>% 
+       mutate(Age = case_when(Age < 31 ~ "20s",
+                              Age %in% 31:40 ~ "30s")))
+```
+
+`case_when` is essentially a piece-wise comparison. When `Age` is less than 31, you overwrite the `Age` variable with `20s`. If `Age` is in the integers from 31 to 40, you replace the value with `30s`. In this example we used both a `<` comparison and the `%in%` statement we've seen before just to show multiple functionality.
+
+**ACTIVITY: Save the dichotomized Age variable.**
+
+```{r}
+
+```
+
+So the `Age` variable has now been categorized. Now, we need to convert the data from *wide* to *long* format. We do this with the `pivot_longer()` function included in `tidyverse`. 
+
+**ACTIVITY: Convert the data from wide-to-tall format.**
+
+```{r}
+
+```
+
+**pivot_longer().** There are essentially three input arguments into the `pivot_longer()` function:
+
+* *First:* a list of all the columns we want to pivot across -- in this case, T0, T1, T2, T3, T4, T5, and T6.
+* *Second:* `names_to` - creates the name of a *new* variable whose values will correspond to the original names of the pivoted columns
+* *Third:* `values_to` - creates and names a *new* variable that will house the values originally stored in the pivoted columns
+
+```{r}
+# peek at the pivoted data structure
+# head(alcohol.long, n=12)
+```
+
+You will now note the data is now in a **long** format, which is how we need it expressed for the analysis.
+
+Lastly, so that R doesn't try and treat it as a number, we tell it that the `Subject` variable is a factor (or categorical) variable. We also want to make sure that the factor levels for `Alcohol` are in the order that makes the best sense. 
+
+**ACTIVITY: Correct the factor variables.** In the code chunk below, edit the `alcohol.long` dataset so that the `Subject` variable is treated as a factor, and so that the factor levels in the `Alcohol` varaible are in an logical order (Control, Moderate, High).
+
+```{r}
+
+```
+
+### Exploratory Data Analysis
+
+There are 2 categories for age, 3 categories for alcohol use and then 7 time points to consider. Essentially $2\times 3\times 7 = 42$ combinations to consider. Rather than look numerically we will consider things graphically.
+
+First we consider a plot of the Reaction times in Time based on Alcohol treatment with Age determining the linetype.
+
+**ACTIVITY: Make a profile plot of all subjects.**
+
+```{r}
+
+```
+
+With multiple colors and line types, as well as grouping by subject, this plot is crowded with lines. Not only is this plot cluttered, it is hard to determine anything informative.  
+
+**ACTIVITY: Facet the plot.**  In the code chunk below, edit the plot I made above, but instead facet the plot by `Age`. You should also get rid of the `linetype=` argument. Is the resulting plot improved?  Does it still have shortcomings?
+
+```{r}
+
+```
+
+**ACTIVITY: Plot the means.**  To improve the ability to see the factor effects, we can make a plot of the means rather than the raw data, grouping by the `Alcohol` groups while still faceting by `Age`.  Write code below to do make such a plot, and comment on what you observe in the resulting plot.  We suggest you look back at knitted Markdown from Class 06 for some guidance with code.
+
+```{r}
+
+```
+
+**ACTIVITY: Plot the means without faceting.**
+
+```{r}
+
+```
+
+**ACTIVITY: Comment on the information provided in any/all the plots provided.**
+
+**Make comments here:**
+
+
+### Model fitting and analysis
+
+Below is the code to fit the repeated measures ANOVA model to the data:
+
+```{r}
+```
+
+*(Remember: you are <b>not</b> required to check assumptions using `autoplot` here due to the complexity of repeated measures assumption checking).*
+
+**ACTIVITY: See the ANOVA results.** In the empty code chunk below, write code that allows you to see a summary of the ANOVA results:
+
+```{r}
+
+```
+
+**ACTIVITY: Interpret the results.**  Using the repeated measures example from Class 07 as a methodological guide, provide a full interpretation of the ANOVA results in problem context.  **Perform and interpret any necessary and appropriate follow-up multiple comparisons** using the empty code chunk below (Class 06 material might prove useful as a reference for you).
+
+```{r multiple-comparisons-chunk}
+
+```
+
+### Conclusions
+
+**ACTIVITY: Summary plot.**
+
+Build a plot that summarizes the findings of this study and the ANOVA model analysis. That is, provide a single plot that will compliment the story you tell above in the interpretation of the results section and in your overall conclusions below.  Consider aggregating the data if necessary, creating a new dataset, etc. Feel free to incorporate other "geoms" that you may know or discover from some internet searching (e.g., `geom_errorbar`).
+
+```{r}
+
+```
+
+**ACTIVITY: State Overall Conclusions of this Study**
+
+
