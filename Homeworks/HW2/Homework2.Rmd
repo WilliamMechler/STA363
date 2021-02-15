@@ -38,11 +38,9 @@ The experimental units would be the individuals taking part in the experiment. T
 
 #### Problem 1 Part 2
 **Build an appropriate plot for the design of data. Comment on what you see, including comments on the average and variation in the response. Make sure your plot is properly labeled and would be understandable to an outside viewer (that is, the labels and titles explain the context).**
-```{r}
+<br/>
+```{r, echo=FALSE}
 color <- read.csv("color_interference.csv")
-
-
-glimpse(color)
 
 color.data <- color %>%
   pivot_longer(c(DiffCol, Black), names_to="EvalType", values_to="Mean") %>%
@@ -60,24 +58,38 @@ ggplot(color.data, aes(x = EvalType, y = Mean)) +
   xlab("Test type") 
 
 ```
+<br/>
+It appears that not only does the Black colored test have less variation when compared to the Different Color test. It also appears to show that on average people took less time completing the Black colored test when compared to the Different Colored test.
+<br/>
 
 #### Problem 1 Part 3
 **Perform the appropriate statistical analysis for this design.**
-```{r}
-
+```{r, echo=FALSE}
+t.test(color$DiffCol, color$Black, paired=TRUE)
 ```
+<br/>
+With a p-value of 0.01624 we can say that their is a significant difference with a 95% confidence, when comparing the Different color test times with the Black colored test times.
+<br/>
 
 #### Problem 1 Part 4
 **Perform a residual analysis for the statistical method chosen in part 3.**
-```{r}
+```{r, echo=FALSE}
+color.diff <- color %>%
+  mutate(Difference = DiffCol - Black)
 
+ggplot(color.diff) + 
+  geom_qq(aes(sample = Difference)) + 
+  geom_qq_line(aes(sample = Difference))
 ```
+<br/>
+From the above plot we can see that in general our data looks to be in order. The only thing of note is that at the under and lower ends of the graph the data seems to move away from our line of best fit. This can be most clearly seen at the upper end of our graph.
+<br/>
 
 #### Problem 1 Part 5
 **State the conclusion of the experiment, in context.**
-```{r}
-
-```
+<br/>
+From our analysis we can state that, yes the different writing styles resulted in a mean difference from the two different types of tests. More specifaly we can state that the Black writing style resulted in a lower mean time when compared to the Different colored test
+<br/>
 
 ***
 
@@ -98,7 +110,7 @@ The experimental units were the mice assigned to each factor. Those factors bein
 
 #### Problem 2 Part 2
 **Create a factor version of the variable that requires it.**
-```{r}
+```{r, echo=FALSE}
 mice_data <- read.csv("infarct.csv") %>%
     mutate(Treatment=factor(Treatment, 1:3, labels=c("vehicle",
                                                      "compound X",
@@ -108,7 +120,7 @@ glimpse(mice_data)
 
 #### Problem 2 Part 3
 **Perform a meaning/helping EDA for this data. Comment on what you see, including comment on average and variation in foam index.**
-```{r}
+```{r, echo=FALSE}
 ggplot(mice_data, aes(x=Treatment, y=Volume)) + 
   geom_boxplot( col="gray40") +
   stat_summary(fun=mean, geom="point", shape=21, stroke=2, fill="white", color="blue")+
@@ -121,7 +133,7 @@ ggplot(mice_data, aes(x=Treatment, y=Volume)) +
 
 #### Problem 2 Part 4
 **Perform the appropriate statistical analysis for this design. Cite the statistics value, degrees of freedom, p-value, and the conclusion in problem context.**
-```{r}
+```{r, echo=FALSE}
 mice_aov <- aov(Volume ~ Treatment, data=mice_data)
 
 summary(mice_aov)
@@ -129,13 +141,13 @@ summary(mice_aov)
 
 #### Problem 2 Part 5
 **Perform a residual analysis for the statistical method chosen in part 4 to check the model assumptions.**
-```{r}
+```{r, echo=FALSE}
 autoplot(mice_aov)
 ```
 
 #### Problem 2 Part 6
 **Perform appropriate multiple comparisons if necessary and report the results in context.  You must provide a defense of your choice to use Tukey or Dunnett.**
-```{r}
+```{r, echo=FALSE}
 mice.treatment <- emmeans(mice_aov, "Treatment")
 contrast(mice.treatment, "trt.vs.ctrl", ref=1)
 ```
