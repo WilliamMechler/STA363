@@ -109,16 +109,15 @@ With multiple colors and line types, as well as grouping by subject, this plot i
 **ACTIVITY: Facet the plot.**  In the code chunk below, edit the plot I made above, but instead facet the plot by `Age`. You should also get rid of the `linetype=` argument. Is the resulting plot improved?  Does it still have shortcomings?
 
 ```{r}
-ggplot(alcohol.long, aes(x=TimeFrame, y=ReactionTime, group=Alcohol, color=Alcohol)) +
-  stat_summary(fun=mean, geom="line") +
-  stat_summary(fun=mean, geom="point") +
+ggplot(alcohol.long) +
+    geom_line(aes(x=TimeFrame, y=ReactionTime, color=Alcohol, group=Subject)) +
   facet_wrap(~Age)
 ```
 
 **ACTIVITY: Plot the means.**  To improve the ability to see the factor effects, we can make a plot of the means rather than the raw data, grouping by the `Alcohol` groups while still faceting by `Age`.  Write code below to do make such a plot, and comment on what you observe in the resulting plot.  We suggest you look back at knitted Markdown from Class 06 for some guidance with code.
 
 ```{r}
-ggplot(alcohol.long, aes(x=TimeFrame, y=ReactionTime, linetype=Age, color=Alcohol, group=interaction(Age, Alcohol))) +
+ggplot(alcohol.long, aes(x=TimeFrame, y=ReactionTime, group=Alcohol, color=Alcohol)) +
   stat_summary(fun=mean, geom="line") +
   stat_summary(fun=mean, geom="point") +
   facet_wrap(~Age)
@@ -143,8 +142,7 @@ ggplot(alcohol.long, aes(x=TimeFrame, y=ReactionTime, linetype=Age, color=Alcoho
 Below is the code to fit the repeated measures ANOVA model to the data:
 
 ```{r}
-fit <- aov(ReactionTime ~ Age*Alcohol*Time + Error(Subject/TimeFrame), data=alcohol.long)
-summary(fit)
+fit <- aov(ReactionTime ~ Age*Alcohol*TimeFrame + Error(Subject/TimeFrame), data=alcohol.long)
 ```
 
 *(Remember: you are <b>not</b> required to check assumptions using `autoplot` here due to the complexity of repeated measures assumption checking).*
@@ -152,13 +150,15 @@ summary(fit)
 **ACTIVITY: See the ANOVA results.** In the empty code chunk below, write code that allows you to see a summary of the ANOVA results:
 
 ```{r}
-
+summary(fit)
 ```
 
 **ACTIVITY: Interpret the results.**  Using the repeated measures example from Class 07 as a methodological guide, provide a full interpretation of the ANOVA results in problem context.  **Perform and interpret any necessary and appropriate follow-up multiple comparisons** using the empty code chunk below (Class 06 material might prove useful as a reference for you).
 
 ```{r multiple-comparisons-chunk}
+alcohol.mc <- emmeans(fit, pairwise ~ Alcohol | TimeFrame)
 
+alcohol.mc$contrast
 ```
 
 ### Conclusions
@@ -168,7 +168,18 @@ summary(fit)
 Build a plot that summarizes the findings of this study and the ANOVA model analysis. That is, provide a single plot that will compliment the story you tell above in the interpretation of the results section and in your overall conclusions below.  Consider aggregating the data if necessary, creating a new dataset, etc. Feel free to incorporate other "geoms" that you may know or discover from some internet searching (e.g., `geom_errorbar`).
 
 ```{r}
+alcohol.summary <- alcohol.long %>%
+  group_by(Alcohol, TimeFrame) %>%
+  summarise(Mean = mean(ReactionTime),
+            SE = sd(ReactionTime)/sqrt(length(ReactionTime)))
 
+ggplot(alcohol.summary, aes(x=TimeFrame, y=Mean, colour=Alcohol)) + 
+  geom_errorbar(aes(ymin=Mean-SE, ymax=Mean+SE), width=.1, position=position_dodge(0.3)) +
+  geom_line(aes(group=Alcohol), position=position_dodge(0.3)) +
+  geom_point(position=position_dodge(0.3)) +
+  xlab("Time Frame") +
+  ylab("Reaction Time") +
+  ggtitle("Mean Reaction Time (with Standard Error bars)")
 ```
 
 **ACTIVITY: State Overall Conclusions of this Study**
