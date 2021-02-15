@@ -9,8 +9,6 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Homework 2
-
 *** 
 
 #### Loading packages needed for the problems
@@ -128,7 +126,7 @@ ggplot(mice_data, aes(x=Treatment, y=Volume)) +
   theme_bw()
 ```
 <br/>
-**From the above plot we can see that when we compare both Compound X and Y to Vehicle we see that Compound Y looks to have a lower average volume when compared to Compound X and Vehicle. As well it appears to have a smaller variation as well.**
+From the above plot we can see that when we compare both Compound X and Y to Vehicle we see that Compound Y looks to have a lower average volume when compared to Compound X and Vehicle. As well it appears to have a smaller variation as well.
 <br/>
 
 #### Problem 2 Part 4
@@ -138,12 +136,19 @@ mice_aov <- aov(Volume ~ Treatment, data=mice_data)
 
 summary(mice_aov)
 ```
+<br/>
+From the above output we can see we have a f-value of 5.79 and a P-value of 0.00628 with 2 degrees of freedom. With these values can can conclude that their is a significant difference in the response variable (VOlume) depending on which treatment was used.
+<br/>
 
 #### Problem 2 Part 5
 **Perform a residual analysis for the statistical method chosen in part 4 to check the model assumptions.**
 ```{r, echo=FALSE}
 autoplot(mice_aov)
 ```
+<br/>
+When we look at our Normal Q-Q plot our data falls more or less where we expect it to. The only thing I see wrong with the plots come from the Residuals vs Fitted as the values seem to be fanning out. This should be kept in mind for any conclusions from this analysis.
+<br/>
+
 
 #### Problem 2 Part 6
 **Perform appropriate multiple comparisons if necessary and report the results in context.  You must provide a defense of your choice to use Tukey or Dunnett.**
@@ -151,3 +156,6 @@ autoplot(mice_aov)
 mice.treatment <- emmeans(mice_aov, "Treatment")
 contrast(mice.treatment, "trt.vs.ctrl", ref=1)
 ```
+<br/>
+For this part of the problem I used the Dunnett method because it stated in the info for this experiment that the treatment "vehicle" would be considered the control. Because we have a control to compare Compound X and Y to it makes more sense to use Dunnett instead of the Tukey method. Also from the comparison above we can see there is a significant difference when Compound Y is compared to Vehicle with a p-value of .0081. However when we compared Compound X to Vehicle we got a p-value of .9182, with this value we can say that our data shows no significant difference when comparing Compound X to Vehicle.
+<br/>
