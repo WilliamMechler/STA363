@@ -134,7 +134,7 @@ ggplot(alcohol.long, aes(x=TimeFrame, y=ReactionTime, linetype=Age, color=Alcoho
 
 **ACTIVITY: Comment on the information provided in any/all the plots provided.**
 
-**Make comments here:**
+**It appears that the level of Alcohol as a greater affect on a subject's reaction time at **
 
 
 ### Model fitting and analysis
@@ -156,9 +156,9 @@ summary(fit)
 **ACTIVITY: Interpret the results.**  Using the repeated measures example from Class 07 as a methodological guide, provide a full interpretation of the ANOVA results in problem context.  **Perform and interpret any necessary and appropriate follow-up multiple comparisons** using the empty code chunk below (Class 06 material might prove useful as a reference for you).
 
 ```{r multiple-comparisons-chunk}
-alcohol.mc <- emmeans(fit, pairwise ~ Alcohol | TimeFrame)
+alcohol.mc <- emmeans(fit, Alcohol | TimeFrame)
 
-alcohol.mc$contrast
+contrast(alcohol.mc, "trt.vs.ctrl", ref=1)
 ```
 
 ### Conclusions
