@@ -1,0 +1,38 @@
+---
+title: "Main"
+author: "William Mechler"
+date: "2/19/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, loadPackages, message=FALSE}
+library(tidyverse)
+library(knitr)
+library(ggfortify)
+library(emmeans)
+```
+
+```{r}
+lab1 <- read.csv("dopLab01.csv")%>%
+  mutate(Lab=as.factor(1))
+```
+
+```{r}
+lab2 <- read.table("dopLab02.txt")%>%
+  rename(Depth = V1) %>%
+  mutate(Lab=as.factor(2))
+```
+
+```{r}
+lab3 <- read.table(file = 'dopLab03.tsv', sep = '\t', header = TRUE) %>%
+    rename(Depth = DOP, Lab = LAB) %>%
+  mutate(Lab=as.factor(3))
+```
+
+```{r}
+labMerge <- bind_rows(lab1,lab2,lab3)
+```
