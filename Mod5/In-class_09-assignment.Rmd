@@ -1,0 +1,85 @@
+---
+title: 'In Class 09: Assignment'
+author: "William Mechler"
+date: "2/22/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(tidymodels)
+library(modelr)
+library(knitr)
+library(kableExtra)   ## uncomment if you want to use it
+```
+
+## Introduction
+
+When woodworking, the strength of the wood is of crucial importance for structural integrity of your final product. In particular, the Modulus of Rupture (MOR) can provide an overall measure of a wood specimen's strength. Unfortunately, to obtain the MOR of any particular piece of wood, it must be destroyed (i.e., ruptured). In an effort to build a predictive model for the MOR of wood, 29 Loblolly pine specimens were randomly sampled and the Specific Gravity (g/cm$^3$), a measure on the density of the wood which does not require destroying the wood sample, and the MOR (in kiloPascals, kPa) were recorded. 
+
+```{r, echo=FALSE}
+pine <- read.csv("loblollyPineData.csv") %>%
+  rename(SpecificGravity=X,
+         ModulusRupture=Y)
+```
+
+```{r, echo=FALSE, message=FALSE}
+ggplot(pine, aes(x=SpecificGravity, y=ModulusRupture) ) + 
+  geom_point() + 
+  geom_smooth(method="lm", se=FALSE) +
+  labs(x="Specific Gravity (g/cm^3)", y="Modulus of Rupture")
+```
+
+```{r, echo=FALSE}
+kable(cor(pine), caption="Correlation of the Specific Gravity to Modulus Rupture" ) %>%
+  kable_styling()
+```
+<br />
+From the above graph and table we can see that Specific Gravity and Modulus of Rupture have a strong correlation of 
+.943. With this high correlation a linear model may be fitted to predict Modulus of Rupture using Specific Gravity.
+<br />
+
+```{r, echo=FALSE}
+pine_fit <- lm(ModulusRupture ~ SpecificGravity, data=pine)
+#summary(pine_fit)
+```
+
+```{r, echo=FALSE}
+## Two functions from tidymodels can extract information 
+## for us and put them in tibbles/data.frames
+coef_table <- tidy(pine_fit, conf.int=TRUE)
+model_summary <- glance(pine_fit)
+
+```
+
+```{r, echo=FALSE}
+coef.data <- coef_table[, c(1,2,3,6,7,4,5)]
+kable(coef.data, digits = 3, caption ="Estimated Coefficients for Fitted Regression Model", col.names = c("Term",
+                                "Estimate",
+                                "Standard error",
+                                "Lower estimate",
+                                "Upper estimate",
+                                "t-Statistic",
+                                "P-value")) %>%
+  kable_styling()
+```
+<br />
+We see from the above table that our intercept value is negative so in this case that means it is of no use to us but this was expected as most linear models end up with an intangible intercept.
+<br />
+
+```{r, echo=FALSE}
+model.data <- model_summary[, c(3,4,6,11,5,2,8,9)]
+kable(model.data, digits = 3, caption ="Model Summary Statistics for the Fitted Regression Model",col.names = c("Residual Std. Error",
+                                                                                                                "F-statistic",
+                                                                                                                "df Numerator",
+                                                                                                                "df Denominator",
+                                                                                                                "p-value",
+                                                                                                                "Adjusted R-squared",
+                                                                                                                "AIC",
+                                                                                                                "BIC")) %>%
+  kable_styling()
+```
+<br />
+On average the linear model predicts the Modulus of Rupture with an error of 6929.81 which on our scale isn't the best fir but is this a useful value for further calculations. Considering our scale for this data set ranges from 0 to 80,000+ for our Modulus of Rupture values.
+<br />
