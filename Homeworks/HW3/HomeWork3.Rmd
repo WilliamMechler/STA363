@@ -1,0 +1,101 @@
+---
+title: "HomeWork 3"
+author: "William Mechler"
+date: "3/7/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, loadPackages, message=FALSE, echo=FALSE}
+library(knitr)
+library(ggfortify)
+library(knitr)
+library(ggplot2)
+library(gridExtra)
+library(kableExtra)
+library(plotly)
+library(emmeans)
+library(GGally)
+library(tidyverse)
+library(lindia)
+```
+
+<br/>
+Part 1, reading in the data for this problem but only selecting needed columns.
+<br/>
+```{r}
+riceData <- read.table("rice.txt", header = TRUE) %>%
+  select(moistureContent, amyloseContent, proteinContent, waterAbsorption, swellingRatio, pH, solidsContent, chewiness)
+```
+
+```{r, echo=FALSE}
+ggpairs(riceData) +
+  theme_bw()
+```
+<br/>
+Part 2, from the above scatterplot matrix there appears to be some trends we can see. One of these trends is that most of our data points seems to have a low moisture content and a high amylose content. Besides that any other patterens I can see seem to be too light to call out at this point.
+<br/>
+```{r, warning=FALSE}
+riceFit1 <- lm(chewiness ~ moistureContent + amyloseContent + proteinContent + waterAbsorption + swellingRatio + pH + solidsContent, data=riceData)
+
+autoplot(riceFit1)
+```
+<br/>
+Part 3, above you can see the code that fits a multiple regression modeling the chewiness as a function of the following variables moisture content, amylose content, protein content, water absorption, swelling ratio, pH, and solids content.
+
+Part 4, residual analysis TBD
+<br/>
+```{r, warning=FALSE}
+gg_boxcox(riceFit1)
+```
+<br/>
+Part 5, The above box cox shows a optimal λ of -0.5, this would be a lambda of -0.5 would be applied as a negative square root.
+<br/>
+```{r, warning=FALSE, echo=FALSE}
+riceFit2 <- lm(-sqrt(chewiness) ~ moistureContent + amyloseContent + proteinContent + waterAbsorption + swellingRatio + pH + solidsContent, data=riceData)
+
+autoplot(riceFit2)
+```
+
+
+```{r, warning=FALSE}
+riceFit_Part6 <- lm(log(chewiness) ~ moistureContent + amyloseContent + proteinContent + waterAbsorption + swellingRatio + pH + solidsContent, data=riceData)
+
+autoplot(riceFit_Part6)
+```
+<br/>
+Part 6, above you can see the code that fits a multiple regression modeling the chewiness as a function of the following variables moisture content, amylose content, protein content, water absorption, swelling ratio, pH, and solids content. However we applied a log transformation as λ = 0 is within our confidence band.
+
+Part 7, residual analysis TBD
+<br/>
+
+```{r, warning=FALSE}
+summary(riceFit_Part6)
+```
+
+<br/>
+Part 8,
+
+Part 9,
+
+Part 10,
+<br/>
+
+```{r, warning=FALSE}
+fictional_rice <- data.frame(moistureContent = 14.9, 
+                               amyloseContent = 22.6,
+                               proteinContent = 8.1, 
+                               waterAbsorption = 211,
+                               swellingRatio = 225,
+                               pH = 6.6,
+                               solidsContent   = 5.2)
+
+predict(riceFit_Part6, newdata=fictional_rice, interval="prediction", level=0.95)
+```
+<br/>
+Part 11,
+<br/>
