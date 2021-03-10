@@ -1,7 +1,7 @@
 ---
-title: 'Homework #2'
+title: "HomeWork 3"
 author: "William Mechler"
-date: "2/5/2021"
+date: "3/10/2021"
 output: html_document
 ---
 
@@ -9,153 +9,95 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-*** 
 
-#### Loading packages needed for the problems
-```{r, loadPackages, message=FALSE}
-library(tidyverse)
+```{r, loadPackages, message=FALSE, echo=FALSE}
 library(knitr)
 library(ggfortify)
+library(knitr)
+library(ggplot2)
+library(gridExtra)
+library(kableExtra)
+library(plotly)
 library(emmeans)
+library(GGally)
+library(tidyverse)
+library(lindia)
 ```
 
-## Problem 1
-An experiment was conducted to determine the time taken for individuals to read a list of words. Specifically, individuals were tasked with reading a list of color names in two settings: subjects would read a list of colors written in a different color (e.g., blue written in red and red in purple) and then subjects would read the list written in black (e.g., blue, red, purple). Each individual was randomly assigned the order in which to read the two list. The experimenters are interested in determine if the font color/writing style influences reading time. Specifically they wish to determine if the different writing styles result in a mean difference in time to read the list.
 
-### Data Source for Problem 1
-J.R. Stroop (1935). "Studies of Interference in Serial Verbal Reactions", Journal of Experimental Psychology, Vol 18, pp643-662
-
-*** 
-
-#### Problem 1 Part 1
-**Comment on the design of the experiment. Specifically state all the design elements in the context of the problem: the experimental units, the response variable(s), the factor, factor levels, the treatments, and the steps the experimenter took in an attempt to control for nuisance variation or confounding variables.** 
-<br/>
-The experimental units would be the individuals taking part in the experiment. The response variable would be their time taken to complete each reading. The factor would be the color of the reading list which as two factor levels being, written all in black or colors written in a different color. Then the treatments would just be the order in which they took the tests. Finally the steps taken to control nuisance variation are they randomly assigned each subject the order in which they took the tests.
-
-<br/>
-
-#### Problem 1 Part 2
-**Build an appropriate plot for the design of data. Comment on what you see, including comments on the average and variation in the response. Make sure your plot is properly labeled and would be understandable to an outside viewer (that is, the labels and titles explain the context).**
-<br/>
-```{r, echo=FALSE}
-color <- read.csv("color_interference.csv")
-
-color.data <- color %>%
-  pivot_longer(c(DiffCol, Black), names_to="EvalType", values_to="Mean") %>%
-  mutate(EvalType=factor(EvalType, levels=c("DiffCol","Black")))
-
-# Make profile plot with mean overlays
-ggplot(color.data, aes(x = EvalType, y = Mean)) + 
-  geom_boxplot() +
-  geom_point(aes(group = Subj, color = Subj), alpha = 0.4) +
-  geom_line(aes(group = Subj, color = Subj), alpha = 0.4) + 
-  stat_summary(fun = "mean", size = 3, geom = "point", color="red") +
-  stat_summary(fun = "mean", size = 1, geom = "line", color="red", aes(group = 1)) +
-  theme(legend.position = "none") +
-  ylab("Time to complete test") +
-  xlab("Test type") 
-
+```{r}
+riceData <- read.table("rice.txt", header = TRUE) %>%
+  select(moistureContent, amyloseContent, proteinContent, waterAbsorption, swellingRatio, pH, solidsContent, chewiness)
 ```
+### Part 1,
+Reading in the data for this problem but only selecting needed columns shown in code block above.
 <br/>
-It appears that not only does the Black colored test have less variation when compared to the Different Color test. It also appears to show that on average people took less time completing the Black colored test when compared to the Different Colored test.
 <br/>
-
-#### Problem 1 Part 3
-**Perform the appropriate statistical analysis for this design.**
 ```{r, echo=FALSE}
-t.test(color$DiffCol, color$Black, paired=TRUE)
-```
-<br/>
-With a p-value of 0.01624 we can say that their is a significant difference with a 95% confidence, when comparing the Different color test times with the Black colored test times.
-<br/>
-
-#### Problem 1 Part 4
-**Perform a residual analysis for the statistical method chosen in part 3.**
-```{r, echo=FALSE}
-color.diff <- color %>%
-  mutate(Difference = DiffCol - Black)
-
-ggplot(color.diff) + 
-  geom_qq(aes(sample = Difference)) + 
-  geom_qq_line(aes(sample = Difference))
-```
-<br/>
-From the above plot we can see that in general our data looks to be in order. The only thing of note is that at the under and lower ends of the graph the data seems to move away from our line of best fit. This can be most clearly seen at the upper end of our graph.
-<br/>
-
-#### Problem 1 Part 5
-**State the conclusion of the experiment, in context.**
-<br/>
-From our analysis we can state that, yes the different writing styles resulted in a mean difference from the two different types of tests. More specifaly we can state that the Black writing style resulted in a lower mean time when compared to the Different colored test
-<br/>
-
-***
-
-## Problem 2
-An experiment was conduct to compare whether two compound X and compound Y were protective in a mouse model of middle cerebral artery occlusion (MCAO).The end point of the study was infarct volume measured from serial brain sections and staining with hematoxylin–eosin. Mice were randomly assigned to three groups, vehicle treatment(control), compound X and compound Y. In the data set, the three groups are coded as: 1 = vehicle, 2 = compound X and 3 = compound Y.  read the list.
-
-### Data Source for Problem 2
- P. Schlattman and U. Dirnagl (2010). "Statistics in Experimental Cerebrovascular Research: Comparison of More then Two Groups with a Continuous Outcome Variable," Journal of Cerebral Blood Flow & Metabolism, Vol. 30, pp. 1558-1563
-
-***
-
-#### Problem 2 Part 1
-**Comment on the design of the experiment. Specifically state all the design elements in the context of the problem: the experimental units, the response variable(s), the factor, factor levels, the treatments, and the steps the experimenter took in an attempt to control for nuisance variation or confounding variables.**
-<br/>
-
-The experimental units were the mice assigned to each factor. Those factors being compound X, compound Y and vehicle. Each factor only has one factor level so the treatments are compound X, compound Y and vehicle. In a special note vehicle is being considered as the control. The response variable is the infarct volume measured after each test.
-
-
-#### Problem 2 Part 2
-**Create a factor version of the variable that requires it.**
-```{r, echo=FALSE}
-mice_data <- read.csv("infarct.csv") %>%
-    mutate(Treatment=factor(Treatment, 1:3, labels=c("vehicle",
-                                                     "compound X",
-                                                     "compound Y")))
-glimpse(mice_data)
-```
-
-#### Problem 2 Part 3
-**Perform a meaning/helping EDA for this data. Comment on what you see, including comment on average and variation in foam index.**
-```{r, echo=FALSE}
-ggplot(mice_data, aes(x=Treatment, y=Volume)) + 
-  geom_boxplot( col="gray40") +
-  stat_summary(fun=mean, geom="point", shape=21, stroke=2, fill="white", color="blue")+
-  labs(x="Treatments", y="Infarct Volume Measured") + 
+ggpairs(riceData) +
   theme_bw()
 ```
 <br/>
-From the above plot we can see that when we compare both Compound X and Y to Vehicle we see that Compound Y looks to have a lower average volume when compared to Compound X and Vehicle. As well it appears to have a smaller variation as well.
+<h3> Part 2, </h3> 
+From the above scatterplot matrix there appears to be some trends we can see. One of these trends is that most of our data points seems to have a low moisture content and a high amylose content. Besides that any other patterens I can see seem to be too light to call out at this point.
+<br/>
+<h3> Part 3, </h3> 
+Below you can see the code that fits a multiple regression modeling the chewiness as a function of the following variables moisture content, amylose content, protein content, water absorption, swelling ratio, pH, and solids content.
+<br/>
+```{r, warning=FALSE}
+riceFit_part3 <- lm(chewiness ~ moistureContent + amyloseContent + proteinContent + waterAbsorption + swellingRatio + pH + solidsContent, data=riceData)
+
+autoplot(riceFit_part3)
+```
+
+<h3> Part 4, </h3>
+It appears our model right now violates normally and constant variance. We can see these violates within out Normal Q-Q plot and how in our Residuals vs Fitted it was a scale from -250 to around 250 which again would violate the constant variance assumption.
+<br/>
+```{r, warning=FALSE}
+gg_boxcox(riceFit_part3)
+```
+<h3>Part 5,</h3> 
+The above box cox shows a optimal λ of -0.5, this would be a lambda of -0.5 would be applied as a negative square root. Also with -1.7 and 0.6 being at the edge of our box cox we could also try a normal square root transformation and with the -1.7 put chewiness to the power of -1.7. Also with λ = 0 withing our box cox we could also do a transformation of log of chewiness.
 <br/>
 
-#### Problem 2 Part 4
-**Perform the appropriate statistical analysis for this design. Cite the statistics value, degrees of freedom, p-value, and the conclusion in problem context.**
-```{r, echo=FALSE}
-mice_aov <- aov(Volume ~ Treatment, data=mice_data)
 
-summary(mice_aov)
+```{r, warning=FALSE}
+riceFit_Part6 <- lm(log10(chewiness) ~ moistureContent + amyloseContent + proteinContent + waterAbsorption + swellingRatio + pH + solidsContent, data=riceData)
+
+autoplot(riceFit_Part6)
 ```
 <br/>
-From the above output we can see we have a f-value of 5.79 and a P-value of 0.00628 with 2 degrees of freedom. With these values can can conclude that their is a significant difference in the response variable (VOlume) depending on which treatment was used.
+<h3> Part 6, </h3>
+above you can see the code that fits a multiple regression modeling the chewiness as a function of the following variables moisture content, amylose content, protein content, water absorption, swelling ratio, pH, and solids content. However we applied a log transformation as λ = 0 is within our confidence band.
+
+<h3> Part 7, </h3>
+Our log10 transformation fixed our Normal Q-Q plot which helped with our normality assumption. Also the scale on our Residuals vs Fitted went from having a scale from around -250 to 250 to after our transformation of having a scale of -0.2 to .02. This specifialy helped fixed our problem with the constant variance assumption.
 <br/>
 
-#### Problem 2 Part 5
-**Perform a residual analysis for the statistical method chosen in part 4 to check the model assumptions.**
-```{r, echo=FALSE}
-autoplot(mice_aov)
+```{r, warning=FALSE}
+summary(riceFit_Part6)
 ```
-<br/>
-When we look at our Normal Q-Q plot our data falls more or less where we expect it to. The only thing I see wrong with the plots come from the Residuals vs Fitted as the values seem to be fanning out. This should be kept in mind for any conclusions from this analysis.
+<h3> Part 8, </h3> 
+From our model we can say when variables are zero our mean chewiness would be -2.9353164 which wouldn't make sense because you can't have a negative chewiness level.
+
+<h3> Part 9, </h3>
+The slope coefficients for moisture content and protein content are 0.1989953 and 0.1559255 respectably. This means for moisture content if all other predictor variables are held constant a 1 unit increase in moisture content would increase chewiness by 0.1989953. Also for protein content if we held all other predictor variables constant a 1 unit increase in protein content would increase chewiness by 0.1559255.
+
+<h3> Part 10, </h3>
+Our model from part 6 is significant with a p-value of 0.007886 and with an F-statistic of 3.763.
 <br/>
 
+```{r, warning=FALSE}
+fictional_rice <- data.frame(moistureContent = 14.9, 
+                               amyloseContent = 22.6,
+                               proteinContent = 8.1, 
+                               waterAbsorption = 211,
+                               swellingRatio = 225,
+                               pH = 6.6,
+                               solidsContent   = 5.2)
 
-#### Problem 2 Part 6
-**Perform appropriate multiple comparisons if necessary and report the results in context.  You must provide a defense of your choice to use Tukey or Dunnett.**
-```{r, echo=FALSE}
-mice.treatment <- emmeans(mice_aov, "Treatment")
-contrast(mice.treatment, "trt.vs.ctrl", ref=1)
+predict(riceFit_Part6, newdata=fictional_rice, interval="prediction", level=0.95)
 ```
-<br/>
-For this part of the problem I used the Dunnett method because it stated in the info for this experiment that the treatment "vehicle" would be considered the control. Because we have a control to compare Compound X and Y to it makes more sense to use Dunnett instead of the Tukey method. Also from the comparison above we can see there is a significant difference when Compound Y is compared to Vehicle with a p-value of .0081. However when we compared Compound X to Vehicle we got a p-value of .9182, with this value we can say that our data shows no significant difference when comparing Compound X to Vehicle.
+<h3> Part 11, </h3>
+From the above code we see that our new model from part 6 would predict our fictional rice to have a chewiness level from 2.56 to 3.10 with a 95% confidence level. 
 <br/>
