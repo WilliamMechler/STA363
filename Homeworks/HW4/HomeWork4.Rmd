@@ -29,7 +29,6 @@ library(car)
 Rehabfull <- read.csv("data_REs.csv")
 RehabNumeric <- Rehabfull %>%
   select(-c(Sex))
-
 ggpairs(RehabNumeric)
 ```
 
@@ -56,10 +55,10 @@ autoplot(full.fit)
 ### Question 3
 
 ```{r message=FALSE, warning=FALSE}
-
+summary(full.fit)
 ```
 ### Question 4
-****
+**Yes I do think weight on REs depends on sex. From the above model summary we can see that with a p-value of 0.021 our interaction of SexMale and weight is significant.**
 
 ```{r message=FALSE, warning=FALSE}
 fit.Q5 <- lm(REs ~ Sex + Age + BNP + Grip + FOIS, data=Rehabfull)
@@ -101,3 +100,33 @@ autoplot(fit.Q7, which=c(4,6))
 **From our Cook's distance plots we see three concerning points, those being 79, 90 and 112. 90 and 112 seem to outliers and on the Cook's dist vs Leverage plots seems to be appling leverage to our model.**
 
 **After removing these points**
+
+***
+
+```{r message=FALSE, warning=FALSE}
+RehabNewBNP <- read.csv("data_REs.csv") %>%
+  mutate(NewBNP = case_when(BNP < 32 ~ "alow",
+                            BNP >= 32 & BNP <= 73.5 ~ "middle",
+                            BNP > 73.5 ~ "high")) %>%
+  mutate(NewBNP = as.factor(NewBNP))
+```
+<br/>
+
+### Question 8
+**The above code adds the new BNP to our data set.**
+
+***
+
+```{r message=FALSE, warning=FALSE}
+fit.Q9 <- lm(REs ~ Sex + Age + Grip + FOIS + NewBNP, data=RehabNewBNP)
+summary(fit.Q9)
+```
+<br/>
+
+### Question 9
+**Taking about new regression model**
+
+***
+
+### Question 10
+**s there a significant difference between BNP low group and middle group?**
