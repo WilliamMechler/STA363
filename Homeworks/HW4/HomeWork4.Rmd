@@ -1,0 +1,103 @@
+---
+title: "HomeWork4"
+author: "William Mechler"
+date: "3/29/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, loadPackages, message=FALSE, echo=FALSE}
+library(knitr)
+library(ggfortify)
+library(knitr)
+library(ggplot2)
+library(gridExtra)
+library(kableExtra)
+library(plotly)
+library(emmeans)
+library(GGally)
+library(tidyverse)
+library(lindia)
+library(car)
+```
+
+
+```{r, echo=FALSE}
+Rehabfull <- read.csv("data_REs.csv")
+RehabNumeric <- Rehabfull %>%
+  select(-c(Sex))
+
+ggpairs(RehabNumeric)
+```
+
+### Question 1
+**We see from our scatter plot above that none of the variables individually have a high correlation with respect to REs. In this case a high correlation being more then .800 or -.800. However we due seem to have potential multicollinearity when it comes to Weight and BMI which is the most clear example. But we may also have multicollinearity issues with a correlation of .783. Age and Weight also may be multicollinearity with a correlation of -.505.**
+
+***
+
+```{r message=FALSE, warning=FALSE}
+full.fit <- lm(REs ~ Sex + Age + Weight + BMI + BNP + Grip + FOIS + Sex:Weight, data=Rehabfull)
+autoplot(full.fit)
+```
+<br/>
+
+### Question 2
+**Their doesn't seems to be any assumption violations based on the above residual diagonstic plots. However we do see one or two points in the Residuals vs Fitted and Scale-Location plot which might be considered unusual.**
+
+***
+
+```{r message=FALSE, warning=FALSE}
+
+```
+
+### Question 3
+
+```{r message=FALSE, warning=FALSE}
+
+```
+### Question 4
+****
+
+```{r message=FALSE, warning=FALSE}
+fit.Q5 <- lm(REs ~ Sex + Age + BNP + Grip + FOIS, data=Rehabfull)
+autoplot(fit.Q5)
+
+anova(fit.Q5, full.fit)
+```
+<br/>
+
+### Question 5
+**Out of the two models I prefer our old model as from the above anova output shows us. As it shows with a p-value of 0.0468 with a F-stat of 2.74 that Weight, BMI and the interaction of Sex to Weight are significant to our model.**
+
+***
+
+```{r message=FALSE, warning=FALSE}
+vif(full.fit)
+```
+<br/>
+
+### Question 6
+**Yes there are concerns of multicollinearity based on our vif output. Normally a value of 5 and up is somthing to worry about and with Weight having a value of 6.714 is concrening. Sex and Sex:Weight having values of 30.932 and 34.920 means we definitely have multicollinearity in our model from part 2.**
+
+***
+
+```{r message=FALSE, warning=FALSE}
+autoplot(full.fit, which=c(4,6))
+
+Rehabfull <- Rehabfull %>%
+  mutate(StrangePoints = ifelse(row_number() %in% c(79,90,112),
+                                TRUE, FALSE))
+
+fit.Q7 <- lm(REs ~ Sex + Age + Weight + BMI + BNP + Grip + FOIS + Sex:Weight, data=filter(Rehabfull, !StrangePoints) )
+autoplot(fit.Q7)
+autoplot(fit.Q7, which=c(4,6))
+```
+<br/>
+
+### Question 7
+**From our Cook's distance plots we see three concerning points, those being 79, 90 and 112. 90 and 112 seem to outliers and on the Cook's dist vs Leverage plots seems to be appling leverage to our model.**
+
+**After removing these points**
