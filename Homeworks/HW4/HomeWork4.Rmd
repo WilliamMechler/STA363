@@ -26,7 +26,10 @@ library(car)
 
 
 ### Question 1
-**We see from our scatter plot above that none of the variables individually have a high correlation with respect to REs. In this case a high correlation being more then .800 or -.800. However we due seem to have potential multicollinearity when it comes to Weight and BMI which is the most clear example. But we may also have multicollinearity issues with a correlation of .783. Age and Weight also may be multicollinearity with a correlation of -.505.**
+
+Construct a scatterplot matrix of all the numeric variables. Interpret the results. In particular, describe the relationship among all numeric variables and their perceived ability to predict the response, REs. Do you think there is potential multicollinearity? Why or why not? (3pts)
+
+**We see from our scatter plot below that none of the variables individually have a high correlation with respect to REs. In this case a high correlation being more then .800 or -.800. However we due seem to have potential multicollinearity when it comes to Weight and BMI which is the most clear example. But we may also have multicollinearity issues with a correlation of .783. Age and Weight also may be multicollinearity with a correlation of -.505.**
 
 ```{r, echo=FALSE}
 Rehabfull <- read.csv("data_REs.csv")
@@ -40,7 +43,10 @@ ggpairs(RehabNumeric)
 
 
 ### Question 2
-**Their doesn't seems to be any assumption violations based on the above residual diagonstic plots. However we do see one or two points in the Residuals vs Fitted and Scale-Location plot which might be considered unusual.**
+
+Fit a regression model for the REs as a function of Sex, Age, Weight, BMI, BNP, Grip, FOIS and the interaction between Sex and Weight. Construct residual diagnostic plots of that fit. Do there appear to be any assumption violations? (3pts)
+
+**Their doesn't seems to be any assumption violations based on the above residual diagnostic plots. However we do see one or two points in the Residuals vs Fitted and Scale-Location plot which might be considered unusual.**
 
 ```{r message=FALSE, warning=FALSE}
 full.fit <- lm(REs ~ Sex + Age + Weight + BMI + BNP + Grip + FOIS + Sex:Weight, data=Rehabfull)
@@ -51,6 +57,8 @@ autoplot(full.fit)
 ***
 
 ### Question 3
+
+**Expressing the fitted regression model when sex is male.**
 <br/>
 
 $$REs = \beta_0 + \beta_1(Male) + \beta_2(Age) + \beta_3(Weight) + \beta_4(BMI) + \beta_5(BNP) + \beta_6(Grip) + \beta_7(FOIS) + \beta_8(Sex * Weight) + \varepsilon$$
@@ -58,7 +66,10 @@ $$REs = \beta_0 + \beta_1(Male) + \beta_2(Age) + \beta_3(Weight) + \beta_4(BMI) 
 ***
 
 ### Question 4
-**Yes I do think weight on REs depends on sex. From the above model summary we can see that with a p-value of 0.021 our interaction of SexMale and weight is significant.**
+
+Do you think the effect of weight on REs depends on sex? Cite the statistic and p-value, to make your conclusion. (3pts)
+
+**Yes I do think weight on REs depends on sex. From the below model summary we can see that with a p-value of 0.021 our interaction of SexMale and weight is significant.**
 
 ```{r message=FALSE, warning=FALSE}
 summary(full.fit)
@@ -67,7 +78,10 @@ summary(full.fit)
 <br/>
 
 ### Question 5
-**Out of the two models I prefer old new model as from the above anova output shows us. As it shows with a p-value of 0.0468 with a F-stat of 2.74 that Weight, BMI and the interaction of Sex to Weight are significant to our model.With this we can reject the null hypothesis.**
+
+Fit another regression model with Sex, Age, BNP, Grip, FOIS (without weight, BMI and the interaction between weight and Sex). Compare this model to the model in Part 2. Which model do you prefer? Why? Support your conclusions with an appropriate hypothesis test. (4pts)
+
+**Out of the two models I prefer our old new model as from the above anova output shows us. As it shows with a p-value of 0.0468 with a F-stat of 2.74 that Weight, BMI and the interaction of Sex to Weight are significant to our model. With this we can reject the null hypothesis.**
 
 ```{r message=FALSE, warning=FALSE}
 fit.Q5 <- lm(REs ~ Sex + Age + BNP + Grip + FOIS, data=Rehabfull)
@@ -82,6 +96,9 @@ anova(fit.Q5, full.fit)
 <br/>
 
 ### Question 6
+
+Calculate the VIFs for the fitted model in part 2, do you think there is a concern of multicollinearity based on the results of VIF? (Only look at VIF for numeric variables) (2pts)
+
 **Yes there are concerns of multicollinearity based on our vif output. Normally a value around 5 and up is something to worry about and with Weight having a value of 6.714 is concerning. Also our BMI has a value of 4.189 so we should also note that as well.**
 
 ```{r message=FALSE, warning=FALSE}
@@ -94,6 +111,9 @@ vif(full.fit)
 <br/>
 
 ### Question 7
+
+Provide the Cook’s distance plots of the model in Part 2. What do you observe? If there are any suspicious points based on Cook'D values, fit a model without the most concerning point, do you observe substantial changes on the regression coefficients? (4pts)
+
 **From our Cook's distance plots we see three concerning points, those being 79, 90 and 112. 90 seems to be the worst point so we will remove it and fit a new model without it.**
 
 **After 90 our many of our Coefficients substantially changed for example our Intercept went from 49.54 to 59.75 without point 90. Also our SexMale went from 41.30 to 15.80. Though all the coefficients changed our Intercept and Sexmale were the most affected.**
@@ -114,6 +134,9 @@ summary(fit.Q7)
 <br/>
 
 ### Question 8
+
+In the research paper, they created a new categorical variable based on BNP. When the value of BNP is less than 32, then the level is considered “low”, when the value is between 32 and 73.5, the level is “middle” and when the level is above 73.5, the level is considered “high”. Use the full data set, create this new variable and make sure to assign the factor levels in a meaningful order (i.e., "low", "median", "high"). (3pts)
+
 **The below code adds the new BNP to our data set.**
 
 ```{r message=FALSE, warning=FALSE}
@@ -130,7 +153,10 @@ RehabNewBNP <- read.csv("data_REs.csv") %>%
 <br/>
 
 ### Question 9
-**If we keep all other variables constant and we had a BNPmiddle then our estimate would change by -1.77 and if it was BNP high it would change by -9.18. In both cases our estimate for Res would go down.**
+
+Fit a regression model on the response as a function of Sex, Age, Grip, FOIS and the new BNP variable. Interpret the regression coefficients for BNP middle and BNP high. (5pts)
+
+**If we keep all other variables constant and we have a BNP middle then our estimate would change by -1.77 and if it was BNP high it would change by -9.18. In both cases our estimate for Res would go down.**
 
 ```{r message=FALSE, warning=FALSE}
 fit.Q9 <- lm(REs ~ Sex + Age + Grip + FOIS + BNP, data=RehabNewBNP)
@@ -141,6 +167,9 @@ summary(fit.Q9)
 ***
 
 ### Question 10
+
+Is there a significant difference between BNP low group and middle group? Why? Based on your fitted model in question 9, can you tell that there is a significant difference between the "middle" and the "high" groups? Why? (4pts)
+
 **There is a not a significantly different from BNPlow to BNPmiddle as per our summary above. With a p-value of 0.721 we don't have the evidence to say BNPlow and BNPmiddle are significantly different.**
 
 **Also without changing our model we can not tell if there is a significantly difference between the middle and high groups. As the current p-values for BNPmiddle and BNPhigh are in respect to BNPlow and if they are significantly different. So in our case without changing our model we can not tell if there is a significantly difference from BNPmiddle to BNPhigh.**
