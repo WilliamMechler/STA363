@@ -143,4 +143,4 @@ summary(fit.Q9)
 ### Question 10
 **There is a not a significantly different from BNPlow to BNPmiddle as per our summary above. With a p-value of 0.721 we don't have the evidence to say BNPlow and BNPmiddle are significantly different.**
 
-**Also without changing our model we can not tell if there is a significantly difference between the middle and high groups. As the current p-values for BNPmiddle and BNPhigh are in respect to BNPlow and if they are significantly different. So in our case without changing our model we can not tell if there is a significantly difference from BNP.middle to BNPhigh.**
+**Also without changing our model we can not tell if there is a significantly difference between the middle and high groups. As the current p-values for BNPmiddle and BNPhigh are in respect to BNPlow and if they are significantly different. So in our case without changing our model we can not tell if there is a significantly difference from BNPmiddle to BNPhigh.**
